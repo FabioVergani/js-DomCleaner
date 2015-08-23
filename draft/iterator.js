@@ -66,9 +66,47 @@ function filterAndClean(n){
 
 
 
-
 function filter(n){
- return 1;
+ var s,p,e=n,i=e.nodeType,t=(i===3),r=(t||i!==1)?2:1;//REJECT|ACCEPT
+
+ console.log(
+	r+':'+['','accept','reject','skip'][r],
+	i+':'+[0,'ELEMENT',2,'TEXT',4,5,6,'PROCESSING-INSTRUCTION','COMMENT','DOCUMENT','DOCUMENT-TYPE','DOCUMENT-FRAGMENT'][i]
+ );
+ console.dir(e);
+
+ if(r===2){
+	p=e.parentNode;
+	if(t){//TEXT
+	 s='whiteSpaceStyle';
+	 s=p[s]||(p[s]=p.ownerDocument.defaultView.getComputedStyle(p));
+	 s=s.whiteSpace;
+	 if(/^no/.test(s)){//normal|nowrap
+		t=e.nodeValue;
+		e.nodeValue=t.replace(RegExp('[\s\n\r]+','gim'),'§');
+		console.log(t);
+e.nodeValue=t;
+	 };
+/*|\s+$|'+(s==='nowrap'?'[\s\n\r]+':'\s+')
+	console.dir(s.whiteSpace);
+console.log(p.length);
+		p=p.style.whiteSpace;
+e.nodeValue=t.replace(RegExp('^\s+|\s+$|'+(s==='nowrap'?'[\s\n\r]+':'\s+'),'gim'),'\u0020--');
+var l1=(t.length);
+		 t=
+var l2=(t.length);
+
+console.log(l1-l2);
+
+*/
+
+
+	}else if(i===8){//COMMENT
+		p.removeChild(e);
+	};
+ };
+
+ return r;
 };
 //
 var nodeIterator=$d.createNodeIterator($h,-1,filter);
@@ -83,16 +121,12 @@ console.dir(nodeIterator);
 //
 function walk(root){
 var o=nodeIterator, e=o.usedNode;
-if(e &&'style' in e){
-e.style.background="";
-};
+if(e &&'style' in e){e.style.background="";};
 
 e=o.nextNode();
 o.usedNode=e;
-if(e &&'style' in e){
-e.style.background="red";
-};
-console.dir(e);
+if(e &&'style' in e){e.style.background="red";};
+//console.dir(e);
 //console.dir(nodeIterator);
 };
 
