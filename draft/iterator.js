@@ -1,25 +1,10 @@
-var $w=window, $d=$w.document, $h=$d.documentElement, $b=$d.body;
-
-$h.normalize();
-/*
-Node.normalize() In a normalized sub-tree,
-no text nodes in the sub-tree are empty
-and there are no adjacent text nodes.
-*/
-
-
-var pi=$d.createProcessingInstruction('php',' echo 123; ?');
-$b.insertBefore(pi,$b.firstChild);
-//console.dir(pi);
-
-
-
 /*
 nodeType:
     1 :ELEMENT
     3 :TEXT
     7 :PROCESSING-INSTRUCTION
     8 :COMMENT
+
     9 :DOCUMENT
    10 :DOCUMENT-TYPE
    11 :DOCUMENT-FRAGMENT
@@ -33,7 +18,6 @@ nodeType:
 :12 NOTATION
 
 
-
 nodeFilter:
    -1 :NodeFilter.SHOW_ALL
     1 :NodeFilter.SHOW_ELEMENT
@@ -44,9 +28,6 @@ nodeFilter:
   512 :NodeFilter.SHOW_DOCUMENT_TYPE
  1024 :NodeFilter.SHOW_DOCUMENT_FRAGMENT
 
-
-
-NodeFilter:
 1 FILTER_ACCEPT
 2 FILTER_REJECT > The children of rejected nodes are not visited
 3 FILTER_SKIP > treated as "skip this node but *not* its children".
@@ -55,26 +36,88 @@ NodeFilter:
 */
 
 
-
-
-var nodeIterator=$d.createNodeIterator($d.childNodes[0],-1,function(n){
- var t,s,p,e=n,i=e.nodeType,r=2;//REJECT
- if(/[38]/.test(i)){
+var $w=window, $d=$w.document, $h=$d.documentElement, $b=$d.body;
+$h.normalize();
+/*
+Node.normalize() In a normalized sub-tree,
+no text nodes in the sub-tree are empty
+and there are no adjacent text nodes.
+*/
+function filterAndClean(n){
+ var p,e=n,i=e.nodeType,t,r=(i===1?1:t=(i===3),2);//REJECT
+ if(t||i===8){
 	p=e.parentNode;
-	if(i===3){//TEXT
-		s=p.style.whiteSpace;
-		if(/^no/.test(s)){//normal|nowrap
-		 p=(s==='nowrap'?/^\s*|\s*$|[\s\n\r]+/gim:/^\s*|\s*$|\s+/gim);
-		 s='\u0020';
+	if(t){//TEXT
+		p=p.style.whiteSpace;
+		if(/^no/.test(p)){//normal|nowrap
 		 t=e.nodeValue;
-		 e.nodeValue=/^\s+$/.test(t)?s:t.replace(p,s);
+		 e.nodeValue=t.replace(RegExp('^\s+|\s+$|'+(p==='nowrap'?'[\s\n\r]+':'\s+'),'gim'),'\u0020');
 		};
 	}else if(i===8){//COMMENT
 		p.removeChild(e);
 	};
- }else if(!/[24567]/.test(i)){
-	r=1;//ACCEPT
  };
  return r;
-});
+};
+//
 
+
+
+
+
+
+
+function filter(n){
+ return 1;
+};
+//
+var nodeIterator=$d.createNodeIterator($h,-1,filter);
+//
+console.clear();
+console.dir(nodeIterator);
+
+//console.dir();
+
+
+
+//
+function walk(root){
+var o=nodeIterator, e=o.usedNode;
+if(e &&'style' in e){
+e.style.background="";
+};
+
+e=o.nextNode();
+o.usedNode=e;
+if(e &&'style' in e){
+e.style.background="red";
+};
+console.dir(e);
+//console.dir(nodeIterator);
+};
+
+
+/*
+
+
+
+display:block;border:2px solid red"
+var pi=$d.createProcessingInstruction('php',' echo 123; ?');
+$b.insertBefore(pi,$b.firstChild);
+//console.dir(pi);
+
+e.outerHTML="";
+ f=handle[e.nodeType];
+*/
+
+/*
+//var s=$h.innerHTML;
+//console.log($h.innerHTML.length);
+console.dirxml($h);
+
+console.log(String($h));
+//console.dir($h);
+*/
+
+//console.log();
+//console.dir();
